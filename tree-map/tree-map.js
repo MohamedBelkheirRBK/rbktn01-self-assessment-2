@@ -9,24 +9,14 @@
   * So `map` should return a tree with the same structure, and different values,
   * but it should NOT modify the tree that was passed in.
   *
-  * Example:
-  *   var root1 = new Tree(1);
-  *   var branch2 = root1.addChild(2);
-  *   var branch3 = root1.addChild(3);
-  *   var leaf4 = branch2.addChild(4);
-  *   var leaf5 = branch2.addChild(5);
-  *   var leaf6 = branch3.addChild(6);
-  *   var leaf7 = branch3.addChild(7);
-  *   var newTree = root1.map(function (value) {
-  *     return value * 2;
-  *   })
-  *  newTree.value // 2
-  *  newTree.children[0].value // 4
-  *  newTree.children[1].value // 6
-  *  newTree.children[0].children[1].value // 10
-  *  newTree.children[1].children[1].value // 14
-  *  root1.value // still 1
+
   */
+
+
+
+ 
+
+
 
 var Tree = function(value) {
   this.value = value;
@@ -34,4 +24,36 @@ var Tree = function(value) {
 };
 
 
+Tree.prototype.addChild = function(value) {
+  var j = new Tree(value)
+  this.children.push(j)
+  return j;
+}
+
+
+
+//a map function for trees, works by traversing the original tree, and making a copy of it, while applying the callback on the values before inserting
+//into the constructor
+
+Tree.prototype.map = function(callback) {
+  //make root of new tree;
+  var result = new Tree(callback(this.value));
+  
+  //traversing function, node is the original tree's nodes, target is the new tree's nodes
+  function traverse(node, target) {
+    //loop through the children of the original tree
+    for(var child of node.children){
+      //add to the copy's children, using the values of those children passed through the callback
+      target.addChild(callback(child.value));
+      //if the current node we have from the original tree has children too
+      if(child.children.length > 0){
+        //reiterate over that child, using it and the last inserted copy of a child into the parameters
+        traverse(child, target.children[target.children.length-1])
+      }
+    }
+
+  }
+  traverse(this, result);
+  return result;
+}
 
